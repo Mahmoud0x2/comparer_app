@@ -9,6 +9,10 @@ jobs:
   build:
     # تحديد أن العملية يجب أن تتم على أحدث بيئة ويندوز متاحة
     runs-on: windows-latest
+    
+    # *** الإصلاح هنا: منح الإذن اللازم لإنشاء Release ***
+    permissions:
+      contents: write
 
     steps:
       # الخطوة 1: سحب نسخة من الكود الموجود في المستودع
@@ -33,7 +37,7 @@ jobs:
         run: |
           python -m nuitka --onefile --windows-console-mode=disable --enable-plugin=tk-inter --assume-yes-for-downloads --output-dir=dist app.py
 
-      # *** الخطوة الجديدة: إنشاء Release ورفع الملف ***
+      # الخطوة 5: إنشاء Release ورفع الملف
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v2
         with:
