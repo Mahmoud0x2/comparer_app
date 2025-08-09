@@ -25,14 +25,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # *** الإصلاح هنا: تثبيت Nuitka بشكل صريح ***
           pip install nuitka
           pip install -r requirements.txt
 
       # الخطوة 4: تشغيل Nuitka لتحويل الكود إلى ملف تنفيذي واحد
       - name: Run Nuitka compilation
         run: |
-          python -m nuitka --onefile --windows-disable-console --enable-plugin=tk-inter --output-dir=dist app.py
+          python -m nuitka --onefile --windows-console-mode=disable --enable-plugin=tk-inter --assume-yes-for-downloads --output-dir=dist app.py
 
       # الخطوة 5: رفع الملف التنفيذي الناتج (تم التحديث إلى v4)
       - name: Upload artifact
