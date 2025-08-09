@@ -1,0 +1,40 @@
+# اسم سير العمل الذي سيظهر في قسم Actions
+name: Build Windows Executable
+
+# متى يتم تشغيل هذا السير العمل؟
+# هنا، سيتم تشغيله عند أي عملية "push" إلى المستودع
+on: [push]
+
+jobs:
+  build:
+    # تحديد أن العملية يجب أن تتم على أحدث بيئة ويندوز متاحة
+    runs-on: windows-latest
+
+    steps:
+      # الخطوة 1: سحب نسخة من الكود الموجود في المستودع
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # الخطوة 2: إعداد بيئة بايثون بالإصدار المحدد
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # الخطوة 3: تثبيت المكتبات المطلوبة من ملف requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # الخطوة 4: تشغيل Nuitka لتحويل الكود إلى ملف تنفيذي واحد
+      - name: Run Nuitka compilation
+        run: |
+          python -m nuitka --onefile --windows-disable-console --enable-plugin=tk-inter --output-dir=dist app.py
+
+      # الخطوة 5: رفع الملف التنفيذي الناتج كـ "artifact" لكي نتمكن من تحميله
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: SKU-MultiTool-Windows
+          path: dist/app.exe
