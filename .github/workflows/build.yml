@@ -11,9 +11,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # الخطوة 1: سحب نسخة من الكود الموجود في المستودع
+      # الخطوة 1: سحب نسخة من الكود الموجود في المستودع (تم التحديث إلى v4)
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # الخطوة 2: إعداد بيئة بايثون بالإصدار المحدد
       - name: Set up Python
@@ -32,9 +32,9 @@ jobs:
         run: |
           python -m nuitka --onefile --windows-disable-console --enable-plugin=tk-inter --output-dir=dist app.py
 
-      # الخطوة 5: رفع الملف التنفيذي الناتج كـ "artifact" لكي نتمكن من تحميله
+      # الخطوة 5: رفع الملف التنفيذي الناتج (تم التحديث إلى v4)
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: SKU-MultiTool-Windows
           path: dist/app.exe
