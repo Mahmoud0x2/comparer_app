@@ -1,5 +1,5 @@
 # اسم سير العمل الذي سيظهر في قسم Actions
-name: Build Windows Executable
+name: Build and Release Executable
 
 # متى يتم تشغيل هذا السير العمل؟
 # هنا، سيتم تشغيله عند أي عملية "push" إلى المستودع
@@ -11,31 +11,38 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # الخطوة 1: سحب نسخة من الكود الموجود في المستودع (تم التحديث إلى v4)
+      # الخطوة 1: سحب نسخة من الكود الموجود في المستودع
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # الخطوة 2: إعداد بيئة بايثون بالإصدار المحدد
+      # الخطوة 2: إعداد بيئة بايثون
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      # الخطوة 3: تثبيت المكتبات المطلوبة من ملف requirements.txt
+      # الخطوة 3: تثبيت المكتبات المطلوبة
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install nuitka
           pip install -r requirements.txt
 
-      # الخطوة 4: تشغيل Nuitka لتحويل الكود إلى ملف تنفيذي واحد
+      # الخطوة 4: تشغيل Nuitka لتحويل الكود
       - name: Run Nuitka compilation
         run: |
           python -m nuitka --onefile --windows-console-mode=disable --enable-plugin=tk-inter --assume-yes-for-downloads --output-dir=dist app.py
 
-      # الخطوة 5: رفع الملف التنفيذي الناتج (تم التحديث إلى v4)
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      # *** الخطوة الجديدة: إنشاء Release ورفع الملف ***
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v2
         with:
-          name: SKU-MultiTool-Windows
-          path: dist/app.exe
+          # اسم الملف الذي سيتم رفعه
+          files: dist/app.exe
+          # إنشاء وسم (tag) فريد لكل إصدار بناءً على تاريخ ووقت البناء
+          tag_name: build-${{ github.run_number }}
+          # جعل هذا الإصدار هو الأحدث (latest)
+          make_latest: true
+        env:
+          # استخدام التوكن التلقائي من GitHub للسماح بإنشاء Release
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
