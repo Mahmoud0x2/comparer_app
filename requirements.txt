@@ -1,0 +1,5 @@
+pandas
+thefuzz
+numpy
+sv-ttk
+openpyxl
